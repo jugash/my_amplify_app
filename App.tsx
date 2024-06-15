@@ -113,7 +113,7 @@ const App = observer(() => {
   waitForState();
   return (
     <SafeAreaView>
-      <Button title="Create Pack" onPress={() => createParentAndChildren()} />
+      <Button title="Create Parent" onPress={() => createParentAndChildren()} />
       {State$.get() === undefined || State$.isEmpty() ? (
         <Text>No Packs found</Text>
       ) : (
