@@ -29,6 +29,7 @@ const waitForState = async () => {
   console.log('Waiting for state to load');
   // Activate to run list functions
   State$.parents.get();
+  State$.children.get();
   State$.selectedParent.get();
   State$.selectedChildren.get();
 
@@ -38,9 +39,19 @@ const waitForState = async () => {
   await when(syncState(State$.selectedChildren).isLoaded);
 
   // Log loaded state
-  console.log('State[parents] is loaded', State$.parents.get());
-  console.log('State[parent] is loaded', State$.selectedParent.get());
-  console.log('State[children] is loaded', State$.selectedChildren.get());
+  console.log('State[parents] is loaded', JSON.stringify(State$.parents.get()));
+  console.log(
+    'State[parent] is loaded',
+    JSON.stringify(State$.selectedParent.get()),
+  );
+  console.log(
+    'State[children] is loaded',
+    JSON.stringify(State$.children.get()),
+  );
+  console.log(
+    'State[selected children] is loaded',
+    State$.selectedChildren.get(),
+  );
 };
 
 const createParentAndChildren = async () => {
@@ -54,14 +65,14 @@ const createParentAndChildren = async () => {
     State$.parents[id].set({
       id: id,
       name: uniqueNamesGenerator({
-        dictionaries: [adjectives, animals, names],
+        dictionaries: [adjectives, animals],
       }),
     });
 
     const children = Array.from({length: 1}, () => ({
       id: uuidv4(),
       name: uniqueNamesGenerator({
-        dictionaries: [adjectives, animals, names],
+        dictionaries: [names],
       }),
       parentId: id,
     }));
@@ -79,24 +90,21 @@ const renderParent = (parent: Observable<Parent>) => {
   return (
     <View style={styles.data}>
       <Text style={styles.text}>{parent.name.get()}</Text>
-      <Button
-        title="Details"
-        onPress={() => {
-          State$.selectedParentId.set(parent.id.get());
-          waitForState();
-          Alert.alert(
-            JSON.stringify(
-              Object.values(State$.selectedChildren.get()).map(it => it.name),
-            ),
-          );
-        }}
-      />
-      <Button
-        title="Delete"
-        onPress={() => {
-          State$.parents[parent.id.get()].delete();
-        }}
-      />
+      <View style={styles.buttons}>
+        <Button
+          title="Select"
+          onPress={() => {
+            State$.selectedParentId.set(parent.id.get());
+            waitForState();
+          }}
+        />
+        <Button
+          title="Delete"
+          onPress={() => {
+            State$.parents[parent.id.get()].delete();
+          }}
+        />
+      </View>
     </View>
   );
 };
@@ -109,12 +117,25 @@ const App = observer(() => {
       {State$.get() === undefined || State$.isEmpty() ? (
         <Text>No Packs found</Text>
       ) : (
-        <View>
-          <For each={State$.parents}>
-            {parent =>
-              parent.get() === undefined ? null : renderParent(parent)
-            }
-          </For>
+        <View style={styles.layout}>
+          <View style={styles.parent}>
+            <For each={State$.parents}>
+              {parent =>
+                parent.get() === undefined ? null : renderParent(parent)
+              }
+            </For>
+          </View>
+          <View style={styles.child}>
+            <Text>Selected Children</Text>
+            <Text>-----------</Text>
+            <For each={State$.selectedChildren}>
+              {child =>
+                child.get() === undefined ? null : (
+                  <Text>{child.name.get()}</Text>
+                )
+              }
+            </For>
+          </View>
         </View>
       )}
     </SafeAreaView>
@@ -127,14 +148,39 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+  },
+  layout: {
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  parent: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    width: '90%',
+  },
+  child: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f3f3ff',
+    width: '90%',
   },
   data: {
     padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    backgroundColor: '#dddddd',
-    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    flexDirection: 'column',
     textAlign: 'center',
+    width: '100%',
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   text: {
     fontSize: 14,

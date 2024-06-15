@@ -61,7 +61,7 @@ export const ParentListCrud = syncedCrud({
   },
   onSavedUpdate: 'createdUpdatedAt',
   persist: {
-    name: 'ParentState3',
+    name: 'ParentState12',
     retrySync: true,
     plugin: ObservablePersistMMKV,
   },

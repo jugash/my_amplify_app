@@ -56,10 +56,11 @@ export const ChildCrud = (parentId: string) =>
         return null;
       }
     },
+    mode: 'merge',
     updatePartial: true,
     onSavedUpdate: 'createdUpdatedAt',
     persist: {
-      name: 'ChildState3',
+      name: 'ChildState12',
       retrySync: true,
       plugin: ObservablePersistMMKV,
     },
