@@ -1,4 +1,4 @@
-import {ObservablePersistMMKV} from '@legendapp/state/persist-plugins/mmkv';
+import {ObservablePersistLocalStorage} from '@legendapp/state/persist-plugins/local-storage';
 import {syncedCrud} from '@legendapp/state/sync-plugins/crud';
 import {Child, client} from '../../types/data';
 import axios from 'axios';
@@ -96,6 +96,6 @@ export const ChildCrud = (parentId: string) =>
     persist: {
       name: 'ChildState2_' + parentId,
       retrySync: false,
-      plugin: ObservablePersistMMKV,
+      plugin: ObservablePersistLocalStorage,
     },
   });
