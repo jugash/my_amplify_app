@@ -26,7 +26,7 @@ export const ParentListCrud = syncedCrud({
     return data;
   },
 
-  create: async input => {
+  create: async (input, params) => {
     const {data, errors} = await client.models.Parent.create(input);
 
     if (errors) {
@@ -59,9 +59,10 @@ export const ParentListCrud = syncedCrud({
       return null;
     }
   },
+
   onSavedUpdate: 'createdUpdatedAt',
   persist: {
-    name: 'ParentState12',
+    name: 'ParentState15',
     retrySync: true,
     plugin: ObservablePersistMMKV,
   },

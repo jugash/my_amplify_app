@@ -22,7 +22,7 @@ export const ChildCrud = (parentId: string) =>
       return data;
     },
 
-    create: async input => {
+    create: async (input, params) => {
       console.log('Creating Child called', input);
       const {data, errors} = await client.models.Child.create(input);
 
@@ -57,11 +57,16 @@ export const ChildCrud = (parentId: string) =>
       }
     },
     mode: 'merge',
-    updatePartial: true,
-    onSavedUpdate: 'createdUpdatedAt',
+    updatePartial: false,
+    onSaved: ({saved, input, currentValue, isCreate}) => {
+      return {
+        serverValue: isCreate ? saved.createdAt : saved.updatedAt,
+      };
+    },
+    // onSaved: 'createdUpdatedAt',
     persist: {
-      name: 'ChildState12',
-      retrySync: true,
+      name: 'ChildState_' + parentId,
+      retrySync: false,
       plugin: ObservablePersistMMKV,
     },
   });

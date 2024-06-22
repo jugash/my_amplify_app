@@ -13,7 +13,7 @@ const schema = a.schema({
       name: a.string().required(),
       children: a.hasMany('Child', 'parentId'),
     })
-  .authorization(allow => [allow.guest()]),
+  .authorization(allow => [allow.publicApiKey()]),
   Child: a
     .model({
       id: a.id().required(),
@@ -21,7 +21,7 @@ const schema = a.schema({
       parentId: a.id().required(),
       parent: a.belongsTo('Parent', 'parentId'),
     })
-  .authorization(allow => [allow.guest()]),
+  .authorization(allow => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

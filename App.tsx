@@ -29,7 +29,7 @@ const waitForState = async () => {
   console.log('Waiting for state to load');
   // Activate to run list functions
   State$.parents.get();
-  State$.children.get();
+  // State$.children.get();
   State$.selectedParent.get();
   State$.selectedChildren.get();
 
@@ -39,15 +39,15 @@ const waitForState = async () => {
   await when(syncState(State$.selectedChildren).isLoaded);
 
   // Log loaded state
-  console.log('State[parents] is loaded', JSON.stringify(State$.parents.get()));
-  console.log(
-    'State[parent] is loaded',
-    JSON.stringify(State$.selectedParent.get()),
-  );
-  console.log(
-    'State[children] is loaded',
-    JSON.stringify(State$.children.get()),
-  );
+  // console.log('State[parents] is loaded', JSON.stringify(State$.parents.get()));
+  // console.log(
+  //   'State[parent] is loaded',
+  //   JSON.stringify(State$.selectedParent.get()),
+  // );
+  // console.log(
+  //   'State[children] is loaded',
+  //   JSON.stringify(State$.children.get()),
+  // );
   console.log(
     'State[selected children] is loaded',
     State$.selectedChildren.get(),
@@ -60,7 +60,7 @@ const createParentAndChildren = async () => {
     const id = uuidv4();
     State$.selectedParentId.set(id);
 
-    waitForState();
+    await waitForState();
 
     State$.parents[id].set({
       id: id,
@@ -76,6 +76,13 @@ const createParentAndChildren = async () => {
       }),
       parentId: id,
     }));
+
+    const childrenObject = {};
+    for (const child of Object.values(children)) {
+      childrenObject[child.id] = child;
+    }
+
+    State$.selectedChildren.set(childrenObject);
 
     for (const child of Object.values(children)) {
       State$.selectedChildren[child.id].set(child);
@@ -93,9 +100,9 @@ const renderParent = (parent: Observable<Parent>) => {
       <View style={styles.buttons}>
         <Button
           title="Select"
-          onPress={() => {
+          onPress={async () => {
             State$.selectedParentId.set(parent.id.get());
-            waitForState();
+            await waitForState();
           }}
         />
         <Button
