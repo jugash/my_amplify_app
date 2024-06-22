@@ -1,68 +1,97 @@
 import {ObservablePersistMMKV} from '@legendapp/state/persist-plugins/mmkv';
 import {syncedCrud} from '@legendapp/state/sync-plugins/crud';
 import {Parent, client} from '../../types/data';
+import axios from 'axios';
 
 export const ParentListCrud = syncedCrud({
-  subscribe: ({refresh}) => {
-    const subscription = client.models.Parent.observeQuery().subscribe({
-      next: () => {
-        refresh();
-      },
-    });
-
-    return () => subscription.unsubscribe();
-  },
-
   list: async () => {
-    const {data, errors} = await client.models.Parent.list();
-
-    if (errors) {
-      console.error('Error listing parents', errors);
-      return null;
-    }
+    const {data} = await axios.get('http://localhost:3000/parents');
 
     console.log('Listed parents', JSON.stringify(data));
 
     return data;
   },
+  create: async input => {
+    try {
+      const response = await fetch('http://localhost:3000/parents', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      });
 
-  create: async (input, params) => {
-    const {data, errors} = await client.models.Parent.create(input);
+      if (!response.ok) {
+        console.error('Error creating parent', response.statusText);
+        return null;
+      }
 
-    if (errors) {
-      console.error('Error creating parent', errors);
+      const data = await response.json();
+      console.log('Created parent', JSON.stringify(data));
+      return data;
+    } catch (error) {
+      console.error('Error creating parent', error);
       return null;
     }
-
-    console.log('Created parent', JSON.stringify(data));
-    return data;
   },
 
   update: async input => {
-    const {data, errors} = await client.models.Parent.update(input);
+    try {
+      const response = await fetch(
+        `http://localhost:3000/parents/${input.id}`,
+        {
+          method: 'PATCH', // Use PATCH if you're partially updating the record
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(input),
+        },
+      );
 
-    if (errors) {
-      console.error('Error updating parent', errors);
+      if (!response.ok) {
+        console.error('Error updating parent', response.statusText);
+        return null;
+      }
+
+      const data = await response.json();
+      console.log('Updated parent', JSON.stringify(data));
+      return data;
+    } catch (error) {
+      console.error('Error updating parent', error);
       return null;
     }
-
-    return data;
   },
 
-  delete: async (input, params) => {
-    const {data, errors} = await client.models.Parent.delete({
-      id: input.id,
-    });
+  delete: async input => {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/parents/${input.id}`,
+        {
+          method: 'DELETE',
+        },
+      );
 
-    if (errors) {
-      console.error('Error deleting parent', errors);
+      if (!response.ok) {
+        console.error('Error deleting parent', response.statusText);
+        return null;
+      }
+
+      console.log('Deleted parent with ID:', input.id);
+      return null;
+    } catch (error) {
+      console.error('Error deleting parent', error);
       return null;
     }
   },
-
-  onSavedUpdate: 'createdUpdatedAt',
+  onSaved: ({saved, input, currentValue, isCreate}) => {
+    return {
+      createdAt: '2020-01-01T00:00:00Z',
+      updatedAt: '2020-01-01T00:00:00Z',
+    };
+  },
+  // onSavedUpdate: 'createdUpdatedAt',
   persist: {
-    name: 'ParentState15',
+    name: 'ParentState20',
     retrySync: true,
     plugin: ObservablePersistMMKV,
   },

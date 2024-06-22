@@ -1,0 +1,48 @@
+{
+  "parents": [
+    {
+      "id": "1",
+      "name": "parent 1",
+      "createdAt": "2020-01-01T00:00:00Z"
+    },
+    {
+      "id": "2",
+      "name": "parent 2",
+      "createdAt": "2020-01-01T00:00:00Z"
+    }
+  ],
+  "children": [
+    {
+      "id": "1",
+      "name": "child 1",
+      "parentId": "1",
+      "createdAt": "2020-01-01T00:00:00Z",
+      "updatedAt": "2020-01-01T00:00:00Z"
+    },
+    {
+      "id": "2",
+      "name": "child 2",
+      "parentId": "1",
+      "createdAt": "2020-01-01T00:00:00Z",
+      "updatedAt": "2020-01-01T00:00:00Z"
+    },
+    {
+      "id": "3",
+      "name": "child 3",
+      "parentId": "2",
+      "createdAt": "2020-01-01T00:00:00Z"
+    },
+    {
+      "id": "4",
+      "name": "child 4",
+      "parentId": "2",
+      "createdAt": "2020-01-01T00:00:00Z"
+    },
+    {
+      "id": "5",
+      "name": "child 5",
+      "parentId": "2",
+      "createdAt": "2020-01-01T00:00:00Z"
+    }
+  ]
+}

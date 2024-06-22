@@ -9,8 +9,6 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@aws-amplify/react-native": "^1.1.1",
-    "@aws-amplify/ui-react-native": "^2.2.2",
     "@legendapp/state": "^3.0.0-alpha.15",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/netinfo": "^11.3.2",
@@ -18,7 +16,7 @@
     "@react-navigation/native": "^6.1.17",
     "@react-navigation/native-stack": "^6.9.26",
     "@react-navigation/stack": "^6.3.29",
-    "aws-amplify": "^6.3.6",
+    "axios": "^1.7.2",
     "expo": "~51.0.14",
     "expo-status-bar": "~1.12.1",
     "json-server": "^1.0.0-beta.1",
@@ -32,8 +30,6 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@aws-amplify/backend": "^1.0.3",
-    "@aws-amplify/backend-cli": "^1.0.4",
     "@babel/core": "^7.20.0",
     "@types/react": "~18.2.45",
     "aws-cdk": "^2.146.0",
