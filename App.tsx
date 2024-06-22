@@ -8,9 +8,6 @@ import {
   Alert,
 } from 'react-native';
 
-import {Amplify} from 'aws-amplify';
-
-import outputs from './amplify_outputs.json';
 import {State$} from './src/state/State';
 import {Parent} from './src/types/data';
 import {For, observer} from '@legendapp/state/react';
@@ -22,8 +19,7 @@ import {
   names,
   uniqueNamesGenerator,
 } from 'unique-names-generator';
-
-Amplify.configure(outputs);
+import 'react-native-get-random-values';
 
 const waitForState = async () => {
   console.log('Waiting for state to load');
@@ -35,6 +31,7 @@ const waitForState = async () => {
 
   // Wait for load
   await when(syncState(State$.parents).isLoaded);
+  // await when(syncState(State$.children).isLoaded);
   await when(syncState(State$.selectedParent).isLoaded);
   await when(syncState(State$.selectedChildren).isLoaded);
 

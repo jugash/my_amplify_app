@@ -1,71 +1,100 @@
 import {ObservablePersistMMKV} from '@legendapp/state/persist-plugins/mmkv';
 import {syncedCrud} from '@legendapp/state/sync-plugins/crud';
 import {Child, client} from '../../types/data';
+import axios from 'axios';
 
 export const ChildCrud = (parentId: string) =>
   syncedCrud({
     list: async () => {
       console.log('Listing children for parent', parentId);
-      const {data, errors} = await client.models.Child.list({
-        filter: {
-          parentId: {eq: parentId},
-        },
-      });
-
-      if (errors) {
-        console.error('Error listing children', errors);
-        return null;
-      }
-
+      const {data} = await axios.get(
+        'http://localhost:3000/children?parentId=' + parentId,
+      );
       console.log('Listed children', JSON.stringify(data));
-
       return data;
     },
+    create: async input => {
+      try {
+        const response = await fetch('http://localhost:3000/children', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(input),
+        });
 
-    create: async (input, params) => {
-      console.log('Creating Child called', input);
-      const {data, errors} = await client.models.Child.create(input);
+        if (!response.ok) {
+          console.error('Error creating child', response.statusText);
+          return null;
+        }
 
-      if (errors) {
-        console.error('Error creating child', errors);
+        const data = await response.json();
+        console.log('Created child', JSON.stringify(data));
+        return data;
+      } catch (error) {
+        console.error('Error creating child', error);
         return null;
       }
-
-      console.log('Created child', JSON.stringify(data));
-
-      return data;
     },
 
     update: async input => {
-      const {data, errors} = await client.models.Child.update(input);
+      try {
+        const response = await fetch(
+          `http://localhost:3000/children/${input.id}`,
+          {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(input),
+          },
+        );
 
-      if (errors) {
-        console.error('Error updating child', errors);
+        if (!response.ok) {
+          console.error('Error updating child', response.statusText);
+          return null;
+        }
+
+        const data = await response.json();
+        console.log('Updated child', JSON.stringify(data));
+        return data;
+      } catch (error) {
+        console.error('Error updating child', error);
         return null;
       }
-
-      return data;
     },
-
     delete: async input => {
-      const {data, errors} = await client.models.Child.delete({
-        id: parentId,
-      });
-      if (errors) {
-        console.error('Error deleting child', errors);
+      try {
+        const response = await fetch(
+          `http://localhost:3000/children/${input.id}`,
+          {
+            method: 'DELETE',
+          },
+        );
+
+        if (!response.ok) {
+          console.error('Error deleting child', response.statusText);
+          return null;
+        }
+
+        console.log('Deleted child with ID:', input.id);
+        return null;
+      } catch (error) {
+        console.error('Error deleting child', error);
         return null;
       }
     },
-    mode: 'merge',
-    updatePartial: false,
+    mode: 'assign',
+    updatePartial: true,
     onSaved: ({saved, input, currentValue, isCreate}) => {
       return {
-        serverValue: isCreate ? saved.createdAt : saved.updatedAt,
+        createdAt: '2020-01-01T00:00:00Z',
+        updatedAt: '2020-01-01T00:00:00Z',
       };
     },
     // onSaved: 'createdUpdatedAt',
     persist: {
-      name: 'ChildState_' + parentId,
+      name: 'ChildState2_' + parentId,
       retrySync: false,
       plugin: ObservablePersistMMKV,
     },
