@@ -1,11 +1,28 @@
 import {ObservablePersistLocalStorage} from '@legendapp/state/persist-plugins/local-storage';
 import {syncedCrud} from '@legendapp/state/sync-plugins/crud';
-import {Parent, client} from '../../types/data';
 import axios from 'axios';
 
 export const ParentListCrud = syncedCrud({
+  transform: {
+    save: data => {
+      return {
+        userId: 1,
+        id: data.id,
+        title: data.name,
+        body: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto',
+      };
+    },
+    load: data => {
+      return {
+        id: data.id,
+        name: data.title,
+      };
+    },
+  },
   list: async () => {
-    const {data} = await axios.get('http://localhost:3000/parents');
+    const {data} = await axios.get(
+      'https://jsonplaceholder.typicode.com/posts',
+    );
 
     console.log('Listed parents', JSON.stringify(data));
 
@@ -13,13 +30,16 @@ export const ParentListCrud = syncedCrud({
   },
   create: async input => {
     try {
-      const response = await fetch('http://localhost:3000/parents', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'https://jsonplaceholder.typicode.com/posts',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(input),
         },
-        body: JSON.stringify(input),
-      });
+      );
 
       if (!response.ok) {
         console.error('Error creating parent', response.statusText);
@@ -38,7 +58,7 @@ export const ParentListCrud = syncedCrud({
   update: async input => {
     try {
       const response = await fetch(
-        `http://localhost:3000/parents/${input.id}`,
+        `https://jsonplaceholder.typicode.com/posts/${input.id}`,
         {
           method: 'PATCH', // Use PATCH if you're partially updating the record
           headers: {
@@ -65,7 +85,7 @@ export const ParentListCrud = syncedCrud({
   delete: async input => {
     try {
       const response = await fetch(
-        `http://localhost:3000/parents/${input.id}`,
+        `https://jsonplaceholder.typicode.com/posts/${input.id}`,
         {
           method: 'DELETE',
         },
@@ -91,7 +111,7 @@ export const ParentListCrud = syncedCrud({
   },
   // onSavedUpdate: 'createdUpdatedAt',
   persist: {
-    name: 'ParentState20',
+    name: 'ParentState',
     retrySync: true,
     plugin: ObservablePersistLocalStorage,
   },

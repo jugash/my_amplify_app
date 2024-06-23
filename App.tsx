@@ -6,10 +6,10 @@ import {
   SafeAreaView,
   Text,
   Alert,
+  ScrollView,
 } from 'react-native';
 
 import {State$} from './src/state/State';
-import {Parent} from './src/types/data';
 import {For, observer} from '@legendapp/state/react';
 import {Observable, syncState, when} from '@legendapp/state';
 import {v4 as uuidv4} from 'uuid';
@@ -93,7 +93,9 @@ const createParentAndChildren = async () => {
 const renderParent = (parent: Observable<Parent>) => {
   return (
     <View style={styles.data}>
-      <Text style={styles.text}>{parent.name.get()}</Text>
+      <Text style={styles.text}>
+        {parent.id.get() + ' ' + parent.name.get()}
+      </Text>
       <View style={styles.buttons}>
         <Button
           title="Select"
@@ -122,24 +124,24 @@ const App = observer(() => {
         <Text>No Packs found</Text>
       ) : (
         <View style={styles.layout}>
-          <View style={styles.parent}>
-            <For each={State$.parents}>
-              {parent =>
-                parent.get() === undefined ? null : renderParent(parent)
-              }
-            </For>
-          </View>
           <View style={styles.child}>
             <Text>Selected Children</Text>
             <Text>-----------</Text>
             <For each={State$.selectedChildren}>
               {child =>
                 child.get() === undefined ? null : (
-                  <Text>{child.name.get()}</Text>
+                  <Text>{child.parentId.get() + ' ' + child.id.get()}</Text>
                 )
               }
             </For>
           </View>
+          <ScrollView style={styles.parent}>
+            <For each={State$.parents}>
+              {parent =>
+                parent.get() === undefined ? null : renderParent(parent)
+              }
+            </For>
+          </ScrollView>
         </View>
       )}
     </SafeAreaView>
@@ -150,20 +152,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
     width: '100%',
   },
   layout: {
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
     width: '100%',
   },
   parent: {
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
+    // justifyContent: 'center',
+    // alignItems: 'center',
     backgroundColor: '#fff',
     width: '90%',
   },

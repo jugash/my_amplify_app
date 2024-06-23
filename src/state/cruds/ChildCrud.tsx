@@ -1,27 +1,47 @@
 import {ObservablePersistLocalStorage} from '@legendapp/state/persist-plugins/local-storage';
 import {syncedCrud} from '@legendapp/state/sync-plugins/crud';
-import {Child, client} from '../../types/data';
 import axios from 'axios';
 
 export const ChildCrud = (parentId: string) =>
   syncedCrud({
+    transform: {
+      save: data => {
+        return {
+          postId: data.parentId,
+          id: data.id,
+          name: data.name,
+          email: 'abc@def.com',
+          body: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto',
+        };
+      },
+      load: data => {
+        return {
+          parentId: data.postId,
+          id: data.id,
+          name: data.name,
+        };
+      },
+    },
     list: async () => {
       console.log('Listing children for parent', parentId);
       const {data} = await axios.get(
-        'http://localhost:3000/children?parentId=' + parentId,
+        'https://jsonplaceholder.typicode.com/comments?postId=' + parentId,
       );
       console.log('Listed children', JSON.stringify(data));
       return data;
     },
     create: async input => {
       try {
-        const response = await fetch('http://localhost:3000/children', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await fetch(
+          'https://jsonplaceholder.typicode.com/comments',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(input),
           },
-          body: JSON.stringify(input),
-        });
+        );
 
         if (!response.ok) {
           console.error('Error creating child', response.statusText);
@@ -40,7 +60,7 @@ export const ChildCrud = (parentId: string) =>
     update: async input => {
       try {
         const response = await fetch(
-          `http://localhost:3000/children/${input.id}`,
+          `https://jsonplaceholder.typicode.com/comments/${input.id}`,
           {
             method: 'PATCH',
             headers: {
@@ -66,7 +86,7 @@ export const ChildCrud = (parentId: string) =>
     delete: async input => {
       try {
         const response = await fetch(
-          `http://localhost:3000/children/${input.id}`,
+          `https://jsonplaceholder.typicode.com/comments/${input.id}`,
           {
             method: 'DELETE',
           },
@@ -94,7 +114,7 @@ export const ChildCrud = (parentId: string) =>
     },
     // onSaved: 'createdUpdatedAt',
     persist: {
-      name: 'ChildState2_' + parentId,
+      name: 'ChildState_' + parentId,
       retrySync: false,
       plugin: ObservablePersistLocalStorage,
     },
