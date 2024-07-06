@@ -15,14 +15,11 @@ type State = {
 
 export const State$ = observable<State>({
   selectedParentId: undefined,
-  selectedParent: () =>
-    State$.selectedParentId.get() !== undefined
-      ? State$.packs[State$.selectedParentId.get()]
-      : undefined,
+  selectedParent: () => {
+    return State$.parents[State$.selectedParentId.get()];
+  },
   selectedChildren: () => {
-    return State$.selectedParentId.get() !== undefined
-      ? State$.children[State$.selectedParentId.get()]
-      : undefined;
+    return State$.children[State$.selectedParentId.get()];
   },
   isEmpty: () =>
     State$.parents.get() === undefined ||
