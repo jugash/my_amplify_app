@@ -16,6 +16,8 @@ export const ParentListCrud = syncedCrud({
       return {
         id: data.id,
         name: data.title,
+        createdAt: '2020-01-01T00:00:00Z',
+        updatedAt: '2020-01-01T00:00:00Z',
       };
     },
   },
@@ -26,7 +28,11 @@ export const ParentListCrud = syncedCrud({
 
     console.log('Listed parents', JSON.stringify(data));
 
-    return data;
+    return data.map(d => ({
+      ...d,
+      createdAt: '2020-01-01T00:00:00Z',
+      updatedAt: '2020-01-01T00:00:00Z',
+    }));
   },
   create: async input => {
     try {
@@ -111,7 +117,7 @@ export const ParentListCrud = syncedCrud({
   },
   // onSavedUpdate: 'createdUpdatedAt',
   persist: {
-    name: 'ParentState',
+    name: 'PSS_PARENTS1',
     retrySync: true,
     plugin: ObservablePersistLocalStorage,
   },

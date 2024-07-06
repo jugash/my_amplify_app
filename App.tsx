@@ -20,6 +20,24 @@ import {
   uniqueNamesGenerator,
 } from 'unique-names-generator';
 import 'react-native-get-random-values';
+import {get} from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+
+const getState = (obs$: Observable) => {
+  const state$ = syncState(obs$);
+  const error = state$.error.get();
+  const isLoaded = state$.isLoaded.get();
+
+  if (error) {
+    console.error('Error loading state', error);
+    return null;
+  } else if (!isLoaded) {
+    // Do something while loading
+    console.log('State is loading');
+    return null;
+  } else {
+    return obs$.get();
+  }
+};
 
 const waitForState = async () => {
   console.log('Waiting for state to load');
@@ -31,9 +49,21 @@ const waitForState = async () => {
 
   // Wait for load
   await when(syncState(State$.parents).isLoaded);
-  // await when(syncState(State$.children).isLoaded);
   await when(syncState(State$.selectedParent).isLoaded);
   await when(syncState(State$.selectedChildren).isLoaded);
+  console.log('State loaded', JSON.stringify(State$.get()));
+  await when(State$.selectedParent.get() !== undefined);
+  console.log(
+    'Selected parent loaded',
+    State$.selectedParentId.get(),
+    JSON.stringify(State$.selectedParent.get()),
+    JSON.stringify(State$.selectedChildren.get()),
+  );
+  await when(State$.selectedChildren.get() !== undefined);
+
+  // getState(State$.parents);
+  // getState(State$.selectedParent);
+  console.log('*******', getState(State$.selectedChildren));
 
   // Log loaded state
   // console.log('State[parents] is loaded', JSON.stringify(State$.parents.get()));
@@ -45,10 +75,10 @@ const waitForState = async () => {
   //   'State[children] is loaded',
   //   JSON.stringify(State$.children.get()),
   // );
-  console.log(
-    'State[selected children] is loaded',
-    State$.selectedChildren.get(),
-  );
+  // console.log(
+  //   'State[selected children] is loaded',
+  //   State$.selectedChildren.get(),
+  // );
 };
 
 const createParentAndChildren = async () => {
@@ -81,16 +111,16 @@ const createParentAndChildren = async () => {
 
     State$.selectedChildren.set(childrenObject);
 
-    for (const child of Object.values(children)) {
-      State$.selectedChildren[child.id].set(child);
-    }
+    // for (const child of Object.values(children)) {
+    //   State$.selectedChildren[child.id].set(child);
+    // }
     console.log('Created parent and children');
   } catch (e) {
     console.error('Error creating parent and children', e);
   }
 };
 
-const renderParent = (parent: Observable<Parent>) => {
+const renderParent = (parent: Observable) => {
   return (
     <View style={styles.data}>
       <Text style={styles.text}>
@@ -100,6 +130,7 @@ const renderParent = (parent: Observable<Parent>) => {
         <Button
           title="Select"
           onPress={async () => {
+            State$.selectedParentId.set(undefined);
             State$.selectedParentId.set(parent.id.get());
             await waitForState();
           }}
@@ -119,7 +150,7 @@ const App = observer(() => {
   waitForState();
   return (
     <SafeAreaView>
-      <Button title="Create Parent" onPress={() => createParentAndChildren()} />
+      {/* <Button title="Create Parent" onPress={() => createParentAndChildren()} /> */}
       {State$.get() === undefined || State$.isEmpty() ? (
         <Text>No Packs found</Text>
       ) : (
@@ -167,14 +198,15 @@ const styles = StyleSheet.create({
     // justifyContent: 'center',
     // alignItems: 'center',
     backgroundColor: '#fff',
-    width: '90%',
+    width: '100%',
+    height: '75%',
   },
   child: {
     flexDirection: 'column',
-    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f3f3ff',
-    width: '90%',
+    width: '100%',
+    height: '25%',
   },
   data: {
     padding: 20,

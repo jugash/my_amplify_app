@@ -1,6 +1,7 @@
 import {ObservablePersistLocalStorage} from '@legendapp/state/persist-plugins/local-storage';
 import {syncedCrud} from '@legendapp/state/sync-plugins/crud';
 import axios from 'axios';
+import {State$} from '../State';
 
 export const ChildCrud = (parentId: string) =>
   syncedCrud({
@@ -19,6 +20,8 @@ export const ChildCrud = (parentId: string) =>
           parentId: data.postId,
           id: data.id,
           name: data.name,
+          createdAt: '2020-01-01T00:00:00Z',
+          updatedAt: '2020-01-01T00:00:00Z',
         };
       },
     },
@@ -28,7 +31,11 @@ export const ChildCrud = (parentId: string) =>
         'https://jsonplaceholder.typicode.com/comments?postId=' + parentId,
       );
       console.log('Listed children', JSON.stringify(data));
-      return data;
+      return data.map(d => ({
+        ...d,
+        createdAt: '2020-01-01T00:00:00Z',
+        updatedAt: '2020-01-01T00:00:00Z',
+      }));
     },
     create: async input => {
       try {
@@ -112,9 +119,10 @@ export const ChildCrud = (parentId: string) =>
         updatedAt: '2020-01-01T00:00:00Z',
       };
     },
+    // waitFor: () => State$.parents.get(),
     // onSaved: 'createdUpdatedAt',
     persist: {
-      name: 'ChildState_' + parentId,
+      name: 'CSS_123', // + parentId,
       retrySync: false,
       plugin: ObservablePersistLocalStorage,
     },
