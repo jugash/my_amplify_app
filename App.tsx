@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 
-import {State$} from './src/state/State';
+import {Child, Parent, State$} from './src/state/State';
 import {For, observer} from '@legendapp/state/react';
 import {Observable, syncState, when} from '@legendapp/state';
 import {v4 as uuidv4} from 'uuid';
@@ -104,7 +104,7 @@ const createParentAndChildren = async () => {
       parentId: id,
     }));
 
-    const childrenObject = {};
+    const childrenObject: {[key: string]: Child} = {};
     for (const child of Object.values(children)) {
       childrenObject[child.id] = child;
     }
@@ -159,8 +159,10 @@ const App = observer(() => {
             <Text>Selected Children</Text>
             <Text>-----------</Text>
             <For each={State$.selectedChildren}>
-              {child =>
-                child.get() === undefined ? null : (
+              {(child: Observable<Child>) =>
+                child.get() === undefined ? (
+                  <></>
+                ) : (
                   <Text>{child.parentId.get() + ' ' + child.id.get()}</Text>
                 )
               }
@@ -168,8 +170,8 @@ const App = observer(() => {
           </View>
           <ScrollView style={styles.parent}>
             <For each={State$.parents}>
-              {parent =>
-                parent.get() === undefined ? null : renderParent(parent)
+              {(parent: Observable<Parent>) =>
+                parent.get() === undefined ? <></> : renderParent(parent)
               }
             </For>
           </ScrollView>

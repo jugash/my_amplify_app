@@ -1,10 +1,11 @@
 import {ObservablePersistLocalStorage} from '@legendapp/state/persist-plugins/local-storage';
 import {syncedCrud} from '@legendapp/state/sync-plugins/crud';
 import axios from 'axios';
+import {Parent} from '../State';
 
 export const ParentListCrud = syncedCrud({
   transform: {
-    save: data => {
+    save: (data: Parent) => {
       return {
         userId: 1,
         id: data.id,

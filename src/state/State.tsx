@@ -1,11 +1,21 @@
 import {observable, observe} from '@legendapp/state';
 import {syncedCrud} from '@legendapp/state/sync-plugins/crud';
-import {Parent, Child} from '../types/data';
 import {ParentListCrud} from './cruds/ParentListCrud';
 import {ChildCrud} from './cruds/ChildCrud';
 
+export type Parent = {
+  id: string;
+  name: string;
+};
+
+export type Child = {
+  id: string;
+  parentId: string;
+  name: string;
+};
+
 type State = {
-  selectedParentId: string;
+  selectedParentId: string | undefined;
   parents: ReturnType<typeof syncedCrud>;
   children: (id: string) => ReturnType<typeof syncedCrud>;
   selectedParent: () => Parent | undefined;
