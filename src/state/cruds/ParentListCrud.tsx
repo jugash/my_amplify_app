@@ -118,7 +118,7 @@ export const ParentListCrud = syncedCrud({
   },
   // onSavedUpdate: 'createdUpdatedAt',
   persist: {
-    name: 'PSS_PARENTS1',
+    name: 'PSS_PARENTS',
     retrySync: true,
     plugin: ObservablePersistLocalStorage,
   },
