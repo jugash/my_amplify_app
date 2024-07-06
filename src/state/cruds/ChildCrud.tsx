@@ -122,7 +122,7 @@ export const ChildCrud = (parentId: string) =>
     // waitFor: () => State$.parents.get(),
     // onSaved: 'createdUpdatedAt',
     persist: {
-      name: 'CSS_123', // + parentId,
+      name: 'CSS_' + parentId,
       retrySync: false,
       plugin: ObservablePersistLocalStorage,
     },

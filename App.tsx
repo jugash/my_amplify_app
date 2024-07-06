@@ -201,14 +201,14 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     backgroundColor: '#fff',
     width: '100%',
-    height: '75%',
+    // height: '75%',
   },
   child: {
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#f3f3ff',
     width: '100%',
-    height: '25%',
+    // height: '25%',
   },
   data: {
     padding: 20,
